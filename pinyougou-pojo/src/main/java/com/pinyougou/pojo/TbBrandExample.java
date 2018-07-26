@@ -84,7 +84,7 @@ public class TbBrandExample {
         }
 
         protected void addCriterion(String condition) {
-            if (condition == null) {
+                if (condition == null) {
                 throw new RuntimeException("Value for condition cannot be null");
             }
             criteria.add(new Criterion(condition));
