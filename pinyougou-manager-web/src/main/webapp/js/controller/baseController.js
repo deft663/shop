@@ -23,11 +23,23 @@ app.controller('baseController' ,function($scope){
 	//更新复选
 	$scope.updateSelection = function($event, id) {		
 		if($event.target.checked){//如果是被选中,则增加到数组
-			$scope.selectIds.push( id);			
-		}else{
-			var idx = $scope.selectIds.indexOf(id);
-            $scope.selectIds.splice(idx, 1);//删除 
+			$scope.selectIds.push( id);
+        }else{
+            var idx = $scope.selectIds.indexOf(id);
+            $scope.selectIds.splice(idx, 1);//删除
 		}
 	}
-	
+    //提取json字符串数据中某个属性，返回拼接字符串 逗号分隔   方便展示
+    $scope.jsonToString=function(jsonString,key){
+        var json=JSON.parse(jsonString);//将json字符串转换为json对象
+        var value="";
+        for(var i=0;i<json.length;i++){
+            if(i>0){
+                value+=","
+            }
+            value+=json[i][key];
+        }
+        return value;
+    }
+
 });	

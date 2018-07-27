@@ -66,6 +66,9 @@
   <sql id="Base_Column_List" >
     id, spec_name
   </sql>
+  <select id="selectOptionList" resultType="java.util.Map">
+    select id,spec_name as text from tb_specification
+  </select>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.pinyougou.pojo.TbSpecificationExample" >
     select
     <if test="distinct" >
