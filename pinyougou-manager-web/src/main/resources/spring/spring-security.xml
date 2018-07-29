@@ -16,7 +16,7 @@
 
     <!-- 页面拦截规则 -->
     <http use-expressions="false"><!--不使用spel表达式-->
-        <intercept-url pattern="/admin/**" access="ROLE_ADMIN"/>
+        <intercept-url pattern="/**" access="ROLE_ADMIN"/>
         <form-login login-page="/login.html" default-target-url="/admin/index.html"
                     authentication-failure-url="/login.html" always-use-default-target="true"/>
         <csrf disabled="true"/>
@@ -29,7 +29,7 @@
     </http>
 
     <!-- 认证管理器 -->
-    <authentication-manager>
+    <authentication-manager >
         <authentication-provider>
            
             <user-service>

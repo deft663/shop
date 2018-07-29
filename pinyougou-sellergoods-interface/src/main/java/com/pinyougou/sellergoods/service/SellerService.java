@@ -57,5 +57,11 @@ public interface SellerService {
 	 * @return
 	 */
 	public PageResult findPage(TbSeller seller, int pageNum, int pageSize);
-	
+
+	/**
+	 *
+	 * @param sellerID
+	 * @param status  1.审核通过 2。审核未通过 3。关闭商家
+	 */
+	public  void updateStatus(String sellerId,String status);
 }
