@@ -1,5 +1,5 @@
  //控制层 
-app.controller('itemCatController' ,function($scope,$controller   ,itemCatService){	
+app.controller('itemCatController' ,function($scope,$controller,itemCatService,typeTemplateService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -37,13 +37,14 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 		if($scope.entity.id!=null){//如果有ID
 			serviceObject=itemCatService.update( $scope.entity ); //修改  
 		}else{
-			serviceObject=itemCatService.add( $scope.entity  );//增加 
+			$scope.entity.parentId=$scope.parentId;
+			serviceObject=itemCatService.add( $scope.entity  );//增加
 		}				
 		serviceObject.success(
 			function(response){
 				if(response.success){
 					//重新查询 
-		        	$scope.reloadList();//重新加载
+		        	$scope.findByParentId($scope.parentId);
 				}else{
 					alert(response.message);
 				}
@@ -75,5 +76,42 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 			}			
 		);
 	}
-    
+	$scope.parentId=0;
+	$scope.findByParentId=function (parentId) {
+        $scope.parentId=parentId;
+		itemCatService.findByParentId(parentId).success(
+			function (response) {
+				$scope.list=response;
+            }
+		)
+    }
+
+    $scope.grade=1;
+	$scope.setGrade=function (value) {
+		$scope.grade=value;
+    }
+    $scope.selectList=function (p_entity) {
+		if($scope.grade==1){
+			$scope.entity_1=null;
+            $scope.entity_2=null;
+		}
+		if($scope.grade==2){
+			$scope.entity_1=p_entity;
+            $scope.entity_2=null;
+		}
+        if($scope.grade==3){
+            $scope.entity_2=p_entity;
+        }
+        $scope.findByParentId(p_entity.id);
+    }
+    $scope.typeTemplateList={data:[]};//模板列表
+    $scope.findTypeTemplateList=function () {
+        typeTemplateService.selectOptionList().success(
+       	function (response) {
+			$scope.typeTemplateList={data:response}
+        }
+	   )
+		//$scope.typeTemplateList={data:[{"id":35,"text":"手机"},{"id":37,"text":"电视"}]}
+    }
+
 });	
