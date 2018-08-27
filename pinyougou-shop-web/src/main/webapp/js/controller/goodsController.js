@@ -1,5 +1,5 @@
 //控制层
-app.controller('goodsController', function ($scope, $controller, goodsService, uploadService,itemCatService,typeTemplateService) {
+app.controller('goodsController', function ($scope, $controller,$location, goodsService, uploadService,itemCatService,typeTemplateService) {
 
     $controller('baseController', {$scope: $scope});//继承
 
@@ -68,28 +68,75 @@ app.controller('goodsController', function ($scope, $controller, goodsService, u
     }
 
     //查询实体
-    $scope.findOne = function (id) {
+    $scope.findOne=function(){
+        var id= $location.search()['id'];//获取参数值
+        if(id==null){
+            return ;
+        }
         goodsService.findOne(id).success(
-            function (response) {
-                $scope.entity = response;
+            function(response){
+                $scope.entity= response;
+                //向富文本编辑器添加商品介绍
+                editor.html($scope.entity.goodsDesc.introduction);
+                //显示图片列表
+                $scope.entity.goodsDesc.itemImages= JSON.parse($scope.entity.goodsDesc.itemImages);
+
+                //显示扩展属性
+                $scope.entity.goodsDesc.customAttributeItems=  JSON.parse($scope.entity.goodsDesc.customAttributeItems);
+
+                //规格
+                $scope.entity.goodsDesc.specificationItems=JSON.parse($scope.entity.goodsDesc.specificationItems);
+
+                //SKU列表规格列转换
+                for( var i=0;i<$scope.entity.itemList.length;i++ ){
+                    $scope.entity.itemList[i].spec =
+                        JSON.parse( $scope.entity.itemList[i].spec);
+                }
+
+
             }
         );
     }
+    //根据规格名称和选项名称返回是否被勾选
+    $scope.checkAttributeValue=function(specName,optionName){
+        var items= $scope.entity.goodsDesc.specificationItems;
+        var object= $scope.searchObjectByKey(items,"attributeName",specName);
+        if(object==null){
+            return false;
+        }else{
+            if(object.attributeValue.indexOf(optionName)>=0){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
+
 
     //保存
     $scope.save = function () {
         $scope.entity.goodsDesc.introduction = editor.html();
-        goodsService.add($scope.entity).success(
+        var serviceObj;
+
+        if($scope.entity.goods.id!=null) {
+            serviceObj=goodsService.update($scope.entity);
+        }else {
+            serviceObj=goodsService.add($scope.entity);
+        }
+        serviceObj.success(
             function (response) {
-                if (response.success) {
-                    alert("保存成功");
-                    $scope.entity = {};
-                    editor.html('');//清空富文本编辑器
-                } else {
-                    alert(response.message);
-                }
+            if (response.success) {
+                alert("保存成功");
+                $scope.entity = {};
+                editor.html('');//清空富文本编辑器
+                location.href="goods.html";
+            } else {
+                alert(response.message);
             }
-        );
+        })
+
+
     }
 
 
@@ -163,7 +210,10 @@ app.controller('goodsController', function ($scope, $controller, goodsService, u
                 function (response) {
                     $scope.typeTemplate = response;//获取类型模板
                     $scope.typeTemplate.brandIds = JSON.parse($scope.typeTemplate.brandIds);//品牌列表
-                    $scope.entity.goodsDesc.customAttributeItems=JSON.parse( $scope.typeTemplate.customAttributeItems);//扩展属性
+                    //如果没有ID，则加载模板中的扩展数据
+                    if($location.search()['id']==null) {
+                        $scope.entity.goodsDesc.customAttributeItems = JSON.parse($scope.typeTemplate.customAttributeItems);//扩展属性
+                    }
                 }
             );
             //查询规格列表
@@ -197,6 +247,20 @@ app.controller('goodsController', function ($scope, $controller, goodsService, u
             }
         }
         return newList;
+    }
+    $scope.status=['未审核','已审核','审核未通过','关闭'];//商品状态
+
+    //因为我们需要根据分类ID得到分类名称，所以我们将返回的分页结果以数组形式再次封装。
+    $scope.itemCatList=[];//商品分类列表
+    //加载商品分类列表
+    $scope.findItemCatList=function(){
+        itemCatService.findAll().success(
+            function(response){
+                for(var i=0;i<response.length;i++){
+                    $scope.itemCatList[response[i].id]=response[i].name;
+                }
+            }
+        );
     }
 
 
