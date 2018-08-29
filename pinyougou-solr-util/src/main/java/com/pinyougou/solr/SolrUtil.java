@@ -49,6 +49,7 @@ public class SolrUtil {
 
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/applicationContext-*.xml");
+        //导入数据到sorl索引库
         //context.getBean(SolrUtil.class).importItemData();
         TbItem item = context.getBean(SolrTemplate.class).getById("1231490", TbItem.class);
         System.out.println(item.toString());
@@ -56,7 +57,7 @@ public class SolrUtil {
         Criteria criteria = new Criteria("item_keywords").is("手机");
         query.addCriteria(criteria);
         ScoredPage<TbItem> tbItems = context.getBean(SolrTemplate.class).queryForPage(query, TbItem.class);
-        System.out.println();
+        System.out.println(tbItems.getContent());
     }
 }
 

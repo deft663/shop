@@ -22,7 +22,7 @@ public class ContentController {
 
 	@Reference
 	private ContentService contentService;
-	@Autowired
+	@Reference
 	private ContentCategoryService contentCategoryService;
 	/**
 	 * 返回全部列表

@@ -83,7 +83,7 @@
                                 <div class="input-append">
                                     <input type="text" id="autocomplete" ng-model="searchMap.keywords" type="text"
                                            class="input-error input-xxlarge"/>
-                                    <button class="sui-btn btn-xlarge btn-danger" ng-click="search()" type="button">搜索
+                                    <button class="sui-btn btn-xlarge btn-danger" ng-click="searchMap.pageNo=1;search();" type="button">搜索
                                     </button>
                                 </div>
                             </form>
@@ -149,16 +149,18 @@
     <div class="py-container">
         <!--bread-->
         <div class="bread">
-            <ul class="fl sui-breadcrumb">
-                <li>
-                    <a href="#">全部结果</a>
-                </li>
-                <li class="active">智能手机</li>
-            </ul>
+            <ul class="fl sui-breadcrumb">搜索条件：</ul>
             <ul class="tags-choose">
-                <li class="tag">全网通<i class="sui-icon icon-tb-close"></i></li>
-                <li class="tag">63G<i class="sui-icon icon-tb-close"></i></li>
+                <li class="tag" ng-if="searchMap.category!=''" ng-click="removeSearchItem('category')">
+                    商品分类：{{searchMap.category}}<i class="sui-icon icon-tb-close"></i></li>
+                <li class="tag" ng-if="searchMap.brand!=''" ng-click="removeSearchItem('brand')">
+                    品牌：{{searchMap.brand}}<i class="sui-icon icon-tb-close"></i></li>
+                <li class="tag" ng-repeat="(key,value) in searchMap.spec" ng-click="removeSearchItem(key)">
+                    {{key}}:{{value}}<i class="sui-icon icon-tb-close"></i></li>
+                <li class="tag" ng-if="searchMap.price!=''" ng-click="removeSearchItem('price')">
+                    价格：{{searchMap.price}}<i class="sui-icon icon-tb-close"></i></li>
             </ul>
+
             <form class="fl sui-form form-dark">
                 <div class="input-control control-right">
                     <input type="text"/>
@@ -169,33 +171,23 @@
         </div>
         <!--selector-->
         <div class="clearfix selector">
-            <div class="type-wrap">
-                <div class="fl key">手机、数码、配件</div>
-                <div class="fl value"></div>
+            <div class="type-wrap" ng-if="resultMap.categoryList!=null && searchMap.category==''">
+                <div class="fl key">商品分类</div>
+                <div class="fl value">
+                    	<span ng-repeat="category in resultMap.categoryList">
+                            <a href="#" ng-click="addSearchItem('category',category)">{{category}}</a>
+                        </span>
+                </div>
                 <div class="fl ext"></div>
             </div>
-            <div class="type-wrap logo">
+            <div class="type-wrap logo" ng-if="resultMap.brandList!=null && searchMap.brand==''">
                 <div class="fl key brand">品牌</div>
                 <div class="value logos">
                     <ul class="logo-list">
-                        <li><img src="img/_/phone01.png"/></li>
-                        <li><img src="img/_/phone02.png"/></li>
-                        <li><img src="img/_/phone03.png"/></li>
-                        <li><img src="img/_/phone04.png"/></li>
-                        <li><img src="img/_/phone05.png"/></li>
-                        <li><img src="img/_/phone06.png"/></li>
-                        <li><img src="img/_/phone07.png"/></li>
-                        <li><img src="img/_/phone08.png"/></li>
-                        <li><img src="img/_/phone09.png"/></li>
-                        <li><img src="img/_/phone10.png"/></li>
-                        <li><img src="img/_/phone11.png"/></li>
-                        <li><img src="img/_/phone12.png"/></li>
-                        <li><img src="img/_/phone13.png"/></li>
-                        <li><img src="img/_/phone14.png"/></li>
-                        <li><img src="img/_/phone05.png"/></li>
-                        <li><img src="img/_/phone06.png"/></li>
-                        <li><img src="img/_/phone07.png"/></li>
-                        <li><img src="img/_/phone02.png"/></li>
+                        <li ng-repeat="brand in resultMap.brandList">
+                            <a href="#" ng-click="addSearchItem('brand',brand.text)">{{brand.text}}</a>
+                        </li>
+
                     </ul>
                 </div>
                 <div class="ext">
@@ -203,44 +195,19 @@
                     <a href="javascript:void(0);">更多</a>
                 </div>
             </div>
-            <div class="type-wrap">
-                <div class="fl key">网络制式</div>
+            <div class="type-wrap" ng-repeat="spec in resultMap.specList" ng-if="searchMap.spec[spec.text]==null">
+                <div class="fl key">{{spec.text}}</div>
                 <div class="fl value">
                     <ul class="type-list">
-                        <li>
-                            <a>GSM（移动/联通2G）</a>
-                        </li>
-                        <li>
-                            <a>电信2G</a>
-                        </li>
-                        <li>
-                            <a>电信3G</a>
-                        </li>
-                        <li>
-                            <a>移动3G</a>
-                        </li>
-                        <li>
-                            <a>联通3G</a>
-                        </li>
-                        <li>
-                            <a>联通4G</a>
-                        </li>
-                        <li>
-                            <a>电信3G</a>
-                        </li>
-                        <li>
-                            <a>移动3G</a>
-                        </li>
-                        <li>
-                            <a>联通3G</a>
-                        </li>
-                        <li>
-                            <a>联通4G</a>
+                        <li ng-repeat="pojo in spec.options">
+                            <a href="#" ng-click="addSearchItem(spec.text,pojo.optionName)">
+                                {{pojo.optionName}}</a>
                         </li>
                     </ul>
                 </div>
                 <div class="fl ext"></div>
             </div>
+
             <div class="type-wrap">
                 <div class="fl key">显示屏尺寸</div>
                 <div class="fl value">
@@ -281,26 +248,27 @@
             <div class="type-wrap">
                 <div class="fl key">价格</div>
                 <div class="fl value">
-                    <ul class="type-list">
+                    <ul class="type-list" ng-if="searchMap.price==''">
                         <li>
-                            <a>0-500元</a>
+                            <a ng-click="addSearchItem('price','0-500')">0-500元</a>
                         </li>
                         <li>
-                            <a>500-1000元</a>
+                            <a ng-click="addSearchItem('price','500-1000')">500-1000元</a>
                         </li>
                         <li>
-                            <a>1000-1500元</a>
+                            <a ng-click="addSearchItem('price','1000-1500')">1000-1500元</a>
                         </li>
                         <li>
-                            <a>1500-2000元</a>
+                            <a ng-click="addSearchItem('price','1500-2000')">1500-2000元</a>
                         </li>
                         <li>
-                            <a>2000-3000元 </a>
+                            <a ng-click="addSearchItem('price','2000-3000')">2000-3000元 </a>
                         </li>
                         <li>
-                            <a>3000元以上</a>
+                            <a ng-click="addSearchItem('price','3000-*')">3000元以上</a>
                         </li>
                     </ul>
+
                 </div>
                 <div class="fl ext">
                 </div>
@@ -353,6 +321,7 @@
                     </ul>
                 </div>
             </div>
+
             <div class="goods-list">
                 <ul class="yui3-g">
                     <li class="yui3-u-1-5" ng-repeat="item in resultMap.rows">
@@ -366,7 +335,7 @@
                                     <i>{{item.price}}</i>
                                 </strong>
                             </div>
-                            <div class="attr">
+                            <div class="attr" ng-bind-html="item.title | trustHtml">
                                 <!-- <em>{{item.title|limitTo:20}}</em> -->
                                 <em>{{item.title}}</em>
                             </div>
@@ -383,283 +352,31 @@
                             </div>
                         </div>
                     </li>
-
-                    <li class="yui3-u-1-5">
-                        <div class="list-wrap">
-                            <div class="p-img">
-                                <img src="img/_/mobile02.png"/>
-                            </div>
-                            <div class="price">
-                                <strong>
-                                    <em>¥</em>
-                                    <i>6088.00</i>
-                                </strong>
-                            </div>
-                            <div class="attr">
-                                <em>Apple苹果iPhone 6s (A1699)</em>
-                            </div>
-                            <div class="cu">
-                                <em><span>促</span>满一件可参加超值换购</em>
-                            </div>
-                            <div class="commit">
-                                <i class="command">已有2000人评价</i>
-                            </div>
-                            <div class="operate">
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">对比</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">关注</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="yui3-u-1-5">
-                        <div class="list-wrap">
-                            <div class="p-img">
-                                <img src="img/_/mobile03.png"/>
-                            </div>
-                            <div class="price">
-                                <strong>
-                                    <em>¥</em>
-                                    <i>6088.00</i>
-                                </strong>
-                            </div>
-                            <div class="attr">
-                                <em>Apple苹果iPhone 6s (A1699)</em>
-                            </div>
-                            <div class="cu">
-                                <em><span>促</span>满一件可参加超值换购</em>
-                            </div>
-                            <div class="commit">
-                                <i class="command">已有2000人评价</i>
-                            </div>
-                            <div class="operate">
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">对比</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">关注</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="yui3-u-1-5">
-                        <div class="list-wrap">
-                            <div class="p-img">
-                                <img src="img/_/mobile04.png"/>
-                            </div>
-                            <div class="price">
-                                <strong>
-                                    <em>¥</em>
-                                    <i>6088.00</i>
-                                </strong>
-                            </div>
-                            <div class="attr">
-                                <em>Apple苹果iPhone 6s (A1699)</em>
-                            </div>
-                            <div class="cu">
-                                <em><span>促</span>满一件可参加超值换购</em>
-                            </div>
-                            <div class="commit">
-                                <i class="command">已有2000人评价</i>
-                            </div>
-                            <div class="operate">
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">对比</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">关注</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="yui3-u-1-5">
-                        <div class="list-wrap">
-                            <div class="p-img">
-                                <img src="img/_/mobile05.png"/>
-                            </div>
-                            <div class="price">
-                                <strong>
-                                    <em>¥</em>
-                                    <i>6088.00</i>
-                                </strong>
-                            </div>
-                            <div class="attr">
-                                <em>Apple苹果iPhone 6s (A1699)</em>
-                            </div>
-                            <div class="cu">
-                                <em><span>促</span>满一件可参加超值换购</em>
-                            </div>
-                            <div class="commit">
-                                <i class="command">已有2000人评价</i>
-                            </div>
-                            <div class="operate">
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">对比</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">关注</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="yui3-u-1-5">
-                        <div class="list-wrap">
-                            <div class="p-img">
-                                <img src="img/_/mobile06.png"/>
-                            </div>
-                            <div class="price">
-                                <strong>
-                                    <em>¥</em>
-                                    <i>6088.00</i>
-                                </strong>
-                            </div>
-                            <div class="attr">
-                                <em>Apple苹果iPhone 6s (A1699)</em>
-                            </div>
-                            <div class="cu">
-                                <em><span>促</span>满一件可参加超值换购</em>
-                            </div>
-                            <div class="commit">
-                                <i class="command">已有2000人评价</i>
-                            </div>
-                            <div class="operate">
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">对比</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">关注</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="yui3-u-1-5">
-                        <div class="list-wrap">
-                            <div class="p-img">
-                                <img src="img/_/mobile01.png"/>
-                            </div>
-                            <div class="price">
-                                <strong>
-                                    <em>¥</em>
-                                    <i>6088.00</i>
-                                </strong>
-                            </div>
-                            <div class="attr">
-                                <em>Apple苹果iPhone 6s (A1699)</em>
-                            </div>
-                            <div class="cu">
-                                <em><span>促</span>满一件可参加超值换购</em>
-                            </div>
-                            <div class="commit">
-                                <i class="command">已有2000人评价</i>
-                            </div>
-                            <div class="operate">
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">对比</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">关注</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="yui3-u-1-5">
-                        <div class="list-wrap">
-                            <div class="p-img">
-                                <img src="img/_/mobile02.png"/>
-                            </div>
-                            <div class="price">
-                                <strong>
-                                    <em>¥</em>
-                                    <i>6088.00</i>
-                                </strong>
-                            </div>
-                            <div class="attr">
-                                <em>Apple苹果iPhone 6s (A1699)</em>
-                            </div>
-                            <div class="cu">
-                                <em><span>促</span>满一件可参加超值换购</em>
-                            </div>
-                            <div class="commit">
-                                <i class="command">已有2000人评价</i>
-                            </div>
-                            <div class="operate">
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">对比</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">关注</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="yui3-u-1-5">
-                        <div class="list-wrap">
-                            <div class="p-img">
-                                <img src="img/_/mobile03.png"/>
-                            </div>
-                            <div class="price">
-                                <strong>
-                                    <em>¥</em>
-                                    <i>6088.00</i>
-                                </strong>
-                            </div>
-                            <div class="attr">
-                                <em>Apple苹果iPhone 6s (A1699)</em>
-                            </div>
-                            <div class="cu">
-                                <em><span>促</span>满一件可参加超值换购</em>
-                            </div>
-                            <div class="commit">
-                                <i class="command">已有2000人评价</i>
-                            </div>
-                            <div class="operate">
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">对比</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">关注</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="yui3-u-1-5">
-                        <div class="list-wrap">
-                            <div class="p-img">
-                                <img src="img/_/mobile04.png"/>
-                            </div>
-                            <div class="price">
-                                <strong>
-                                    <em>¥</em>
-                                    <i>6088.00</i>
-                                </strong>
-                            </div>
-                            <div class="attr">
-                                <em>Apple苹果iPhone 6s (A1699)</em>
-                            </div>
-                            <div class="cu">
-                                <em><span>促</span>满一件可参加超值换购</em>
-                            </div>
-                            <div class="commit">
-                                <i class="command">已有2000人评价</i>
-                            </div>
-                            <div class="operate">
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">对比</a>
-                                <a href="javascript:void(0);" class="sui-btn btn-bordered">关注</a>
-                            </div>
-                        </div>
-                    </li>
                 </ul>
             </div>
+
             <div class="fr page">
                 <div class="sui-pagination pagination-large">
                     <ul>
-                        <li class="prev disabled">
-                            <a href="#">«上一页</a>
+                        <li class="prev {{isTopPage()? 'disabled':''}}" >
+                            <a href="#" ng-click="queryByPage(searchMap.pageNo-1)">«</a>
                         </li>
-                        <li class="active">
-                            <a href="#">1</a>
+                        <li class="dotted"ng-if="firstDot==true"><span>...</span></li>
+                        <li ng-repeat="p in pageLabel" class="{{searchMap.pageNo==p?'active':''}}">
+                            <a href="#" ng-click="queryByPage(p)">{{p}}</a>
                         </li>
-                        <li>
-                            <a href="#">2</a>
-                        </li>
-                        <li>
-                            <a href="#">3</a>
-                        </li>
-                        <li>
-                            <a href="#">4</a>
-                        </li>
-                        <li>
-                            <a href="#">5</a>
-                        </li>
-                        <li class="dotted"><span>...</span></li>
-                        <li class="next">
-                            <a href="#">下一页»</a>
+                        <li class="dotted"ng-if="lastDot==true"><span>...</span></li>
+                        <li class="next {{isEndPage()? 'disabled':''}}" >
+                            <a href="#" ng-click="queryByPage(searchMap.pageNo+1)">»</a>
                         </li>
                     </ul>
-                    <div><span>共10页&nbsp;</span><span>
-      到第
-      <input type="text" class="page-num">
-      页 <button class="page-confirm" onclick="alert(1)">确定</button></span></div>
+                    <div>
+                        <span>&nbsp;共{{resultMap.totalPages}}页&nbsp;</span>
+                        <span>  到第 <input type="text" class="page-num" ng-model="searchMap.pageNo">页
+	                    <button class="page-confirm" ng-click="queryByPage(searchMap.pageNo)">确定</button></span>
+                    </div>
                 </div>
+
             </div>
         </div>
         <!--hotsale-->
@@ -888,7 +605,8 @@
             <div class="toolbar-panels J-panel">
 
                 <!-- 购物车 -->
-                <div style="visibility: hidden;" class="J-content toolbar-panel tbar-panel-cart toolbar-animate-out">
+                <div style="visibility: hidden;"
+                     class="J-content toolbar-panel tbar-panel-cart toolbar-animate-out">
                     <h3 class="tbar-panel-header J-panel-header">
                         <a href="" class="title"><i></i><em class="title">购物车</em></a>
                         <span class="close-panel J-close" onclick="cartPanelView.tbar_panel_close('cart');"></span>
@@ -919,10 +637,12 @@
                 </div>
 
                 <!-- 我的关注 -->
-                <div style="visibility: hidden;" data-name="follow" class="J-content toolbar-panel tbar-panel-follow">
+                <div style="visibility: hidden;" data-name="follow"
+                     class="J-content toolbar-panel tbar-panel-follow">
                     <h3 class="tbar-panel-header J-panel-header">
                         <a href="#" target="_blank" class="title"> <i></i> <em class="title">我的关注</em> </a>
-                        <span class="close-panel J-close" onclick="cartPanelView.tbar_panel_close('follow');"></span>
+                        <span class="close-panel J-close"
+                              onclick="cartPanelView.tbar_panel_close('follow');"></span>
                     </h3>
                     <div class="tbar-panel-main">
                         <div class="tbar-panel-content J-panel-content">
@@ -935,10 +655,12 @@
                 </div>
 
                 <!-- 我的足迹 -->
-                <div style="visibility: hidden;" class="J-content toolbar-panel tbar-panel-history toolbar-animate-in">
+                <div style="visibility: hidden;"
+                     class="J-content toolbar-panel tbar-panel-history toolbar-animate-in">
                     <h3 class="tbar-panel-header J-panel-header">
                         <a href="#" target="_blank" class="title"> <i></i> <em class="title">我的足迹</em> </a>
-                        <span class="close-panel J-close" onclick="cartPanelView.tbar_panel_close('history');"></span>
+                        <span class="close-panel J-close"
+                              onclick="cartPanelView.tbar_panel_close('history');"></span>
                     </h3>
                     <div class="tbar-panel-main">
                         <div class="tbar-panel-content J-panel-content">
@@ -980,7 +702,8 @@
                     <em class="tab-text"></em>
                     <span class="tab-sub J-count hide">0</span>
                 </div>
-                <div onclick="cartPanelView.tabItemClick('history')" class="toolbar-tab tbar-tab-history" data="我的足迹"
+                <div onclick="cartPanelView.tabItemClick('history')" class="toolbar-tab tbar-tab-history"
+                     data="我的足迹"
                      tag="history">
                     <i class="tab-ico"></i>
                     <em class="tab-text"></em>
@@ -1013,7 +736,8 @@
             <div class="promo-text">已购满600元，您可领赠品</div>
         </div>
         <div class="jtc-item-goods">
-            <span class="p-img"><a href="#" target="_blank"><img src="{2}" alt="{1}" height="50" width="50"/></a></span>
+                <span class="p-img"><a href="#" target="_blank"><img src="{2}" alt="{1}" height="50"
+                                                                     width="50"/></a></span>
             <div class="p-name">
                 <a href="#">{1}</a>
             </div>
