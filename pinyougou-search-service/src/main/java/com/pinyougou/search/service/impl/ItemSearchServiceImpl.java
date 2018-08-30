@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.*;
@@ -26,6 +27,10 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 
     @Override
     public Map<String, Object> search(Map searchMap) {
+        //关键字空格处理
+        String keywords = (String) searchMap.get("keywords");
+        searchMap.put("keywords", keywords.replace(" ", ""));
+
         Map<String, Object> map = new HashMap<>();
         SimpleHighlightQuery query = new SimpleHighlightQuery();
         HighlightOptions options = new HighlightOptions().addField("item_title");
@@ -83,6 +88,21 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
         query.setOffset((pageNo-1)*pageSize);//从第几条记录查询
         query.setRows(pageSize);
+
+        //1.7排序
+        String sortValue= (String) searchMap.get("sort");//ASC  DESC
+        String sortField= (String) searchMap.get("sortField");//排序字段
+        if(sortValue!=null&& !sortValue.equals("")){
+            if(sortValue.equals("ASC")){
+                Sort sort=new Sort(Sort.Direction.ASC, "item_"+sortField);
+                query.addSort(sort);
+            }
+            if(sortValue.equals("DESC")){
+                Sort sort=new Sort(Sort.Direction.DESC, "item_"+sortField);
+                query.addSort(sort);
+            }
+        }
+
         //高亮显示处理
         HighlightPage<TbItem> tbItems = solrTemplate.queryForHighlightPage(query, TbItem.class);
         for (HighlightEntry<TbItem> entry : tbItems.getHighlighted()) {
@@ -171,6 +191,20 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             map.put("specList", specList);
         }
         return map;
+    }
+    @Override
+    public void importList(List list) {
+        solrTemplate.saveBeans(list);
+        solrTemplate.commit();
+    }
+    @Override
+    public void deleteByGoodsIds(List goodsIdList) {
+        System.out.println("删除商品ID"+goodsIdList);
+        Query query=new SimpleQuery();
+        Criteria criteria=new Criteria("item_goodsid").in(goodsIdList);
+        query.addCriteria(criteria);
+        solrTemplate.delete(query);
+        solrTemplate.commit();
     }
 
 }

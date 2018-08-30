@@ -1,10 +1,10 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="pinyougou-manager-web:war exploded">
-    <output-path>$PROJECT_DIR$/pinyougou-manager-web/target/pinyougou-manager-web</output-path>
+  <artifact type="exploded-war" name="pinyougou-page-service:war exploded">
+    <output-path>$PROJECT_DIR$/pinyougou-page-service/target/pinyougou-page-service</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
-          <element id="module-output" name="pinyougou-manager-web" />
+          <element id="module-output" name="pinyougou-page-service" />
         </element>
         <element id="directory" name="lib">
           <element id="archive" name="pinyougou-common-1.0-SNAPSHOT.jar">
@@ -66,25 +66,28 @@
           <element id="library" level="project" name="Maven: jline:jline:0.9.94" />
           <element id="library" level="project" name="Maven: io.netty:netty:3.7.0.Final" />
           <element id="library" level="project" name="Maven: com.github.sgroschupf:zkclient:0.1" />
-          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-web:4.1.1.RELEASE" />
-          <element id="library" level="project" name="Maven: aopalliance:aopalliance:1.0" />
-          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-core:4.1.1.RELEASE" />
-          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-config:4.1.1.RELEASE" />
-          <element id="archive" name="pinyougou-content-interface-1.0-SNAPSHOT.jar">
-            <element id="module-output" name="pinyougou-content-interface" />
-          </element>
           <element id="archive" name="pinyougou-search-interface-1.0-SNAPSHOT.jar">
             <element id="module-output" name="pinyougou-search-interface" />
           </element>
+          <element id="library" level="project" name="Maven: org.freemarker:freemarker:2.3.23" />
           <element id="archive" name="pinyougou-page-interface-1.0-SNAPSHOT.jar">
             <element id="module-output" name="pinyougou-page-interface" />
           </element>
+          <element id="archive" name="pinyougou-dao-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="pinyougou-dao" />
+          </element>
+          <element id="library" level="project" name="Maven: org.mybatis:mybatis:3.2.8" />
+          <element id="library" level="project" name="Maven: org.mybatis:mybatis-spring:1.2.2" />
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.32" />
+          <element id="library" level="project" name="Maven: com.alibaba:druid:1.0.9" />
+          <element id="library" level="project" name="Maven: com.github.pagehelper:pagehelper:4.0.0" />
+          <element id="library" level="project" name="Maven: com.github.jsqlparser:jsqlparser:0.9.1" />
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/pinyougou-manager-web/target/pinyougou-manager-web/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/pinyougou-page-service/target/pinyougou-page-service/META-INF/MANIFEST.MF" />
       </element>
-      <element id="javaee-facet-resources" facet="pinyougou-manager-web/web/Web" />
+      <element id="javaee-facet-resources" facet="pinyougou-page-service/web/Web" />
     </root>
   </artifact>
 </component>

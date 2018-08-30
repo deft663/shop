@@ -43,7 +43,9 @@ public class TbItem implements Serializable {
 
     private Date createTime;
 
+    @Field("item_updatetime")//和schema.xml中的定义的域的名称一致
     private Date updateTime;
+
 
     private String itemSn;
 

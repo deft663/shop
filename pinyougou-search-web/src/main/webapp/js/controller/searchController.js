@@ -1,4 +1,10 @@
-app.controller('searchController', function ($scope, searchService) {
+app.controller('searchController', function ($scope,$location, searchService) {
+    //加载查询字符串
+    $scope.loadkeywords=function(){
+        $scope.searchMap.keywords=  $location.search()['keywords'];
+        $scope.search();
+    }
+
     //搜索
     $scope.search = function () {
         searchService.search($scope.searchMap).success(
@@ -16,6 +22,7 @@ app.controller('searchController', function ($scope, searchService) {
         } else {
             $scope.searchMap.spec[key] = value;
         }
+        $scope.searchMap.pageNo=1;
         $scope.search();//执行搜索
     }
 
@@ -29,7 +36,7 @@ app.controller('searchController', function ($scope, searchService) {
         $scope.search();//执行搜索
     }
     $scope.searchMap={'keywords':'','category':'','brand':'','spec':{},'price':'',
-        'pageNo':1,'pageSize':10 };//搜索条件封装对象
+        'pageNo':1,'pageSize':10,'sortField':'','sort':'' };//搜索条件封装对象
 
     //构建分页标签(totalPages为总页数)
     buildPageLabel=function(){
@@ -88,5 +95,22 @@ app.controller('searchController', function ($scope, searchService) {
             return false;
         }
     }
+    //设置排序规则
+    $scope.sortSearch=function(sortField,sort){
+        $scope.searchMap.sortField=sortField;
+        $scope.searchMap.sort=sort;
+        $scope.search();
+    }
+    //判断关键字是不是品牌
+    $scope.keywordsIsBrand = function () {
+        for (var i = 0; i < $scope.resultMap.brandList.length; i++) {
+            if ($scope.searchMap.keywords.indexOf($scope.resultMap.brandList[i].text) >= 0) {
+                $scope.searchMap.brand=$scope.resultMap.brandList[i].text;
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 });

@@ -17,7 +17,7 @@
 
 </head>
 
-<body ng-app="pinyougou" ng-controller="searchController">
+<body ng-app="pinyougou" ng-controller="searchController" ng-init="loadkeywords()">
 <!-- 头部栏位 -->
 <!--页面顶部-->
 <div id="nav-bottom">
@@ -83,7 +83,7 @@
                                 <div class="input-append">
                                     <input type="text" id="autocomplete" ng-model="searchMap.keywords" type="text"
                                            class="input-error input-xxlarge"/>
-                                    <button class="sui-btn btn-xlarge btn-danger" ng-click="searchMap.pageNo=1;search();" type="button">搜索
+                                    <button class="sui-btn btn-xlarge btn-danger" ng-click="search()" >搜索
                                     </button>
                                 </div>
                             </form>
@@ -180,7 +180,7 @@
                 </div>
                 <div class="fl ext"></div>
             </div>
-            <div class="type-wrap logo" ng-if="resultMap.brandList!=null && searchMap.brand==''">
+            <div class="type-wrap logo" ng-if="resultMap.brandList!=null && searchMap.brand==''&& keywordsIsBrand()==false">
                 <div class="fl key brand">品牌</div>
                 <div class="value logos">
                     <ul class="logo-list">
@@ -304,20 +304,26 @@
                 <div class="navbar-inner filter">
                     <ul class="sui-nav">
                         <li class="active">
-                            <a href="#">综合</a>
+                            <a href="#" ng-click="sortSearch('','')">综合</a>
                         </li>
+
                         <li>
                             <a href="#">销量</a>
                         </li>
                         <li>
-                            <a href="#">新品</a>
+                            <a href="#" ng-click="sortSearch('updatetime','DESC')">新品</a>
                         </li>
+
                         <li>
                             <a href="#">评价</a>
                         </li>
                         <li>
-                            <a href="#">价格</a>
+                            <a href="#" ng-click="sortSearch('price','ASC')">价格↑</a>
                         </li>
+                        <li>
+                            <a href="#" ng-click="sortSearch('price','DESC')">价格↓</a>
+                        </li>
+
                     </ul>
                 </div>
             </div>
