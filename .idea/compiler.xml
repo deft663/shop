@@ -13,6 +13,7 @@
         <module name="pinyougou-manager-web" />
         <module name="pinyougou-page-interface" />
         <module name="pinyougou-page-service" />
+        <module name="pinyougou-page-web" />
         <module name="pinyougou-pojo" />
         <module name="pinyougou-portal-web" />
         <module name="pinyougou-search-interface" />
@@ -32,6 +33,7 @@
       <module name="pinyougou-manager-web" target="1.8" />
       <module name="pinyougou-page-interface" target="1.8" />
       <module name="pinyougou-page-service" target="1.8" />
+      <module name="pinyougou-page-web" target="1.8" />
       <module name="pinyougou-parent" target="1.8" />
       <module name="pinyougou-pojo" target="1.8" />
       <module name="pinyougou-portal-web" target="1.8" />
