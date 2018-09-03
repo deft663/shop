@@ -7,7 +7,6 @@ app.controller('goodsController', function ($scope, $controller,$location, goods
      *上传图片
      */
     $scope.uploadFile = function () {
-        alert(1);
         uploadService.uploadFile().success(function (response) {
             if (response.success) {//如果上传成功，取出url
                 $scope.image_entity.url = response.message;//设置文件地址

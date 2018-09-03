@@ -21,6 +21,9 @@ public class PageListener implements MessageListener {
             String text = textMessage.getText();
             System.out.println("接收到消息：" + text);
             boolean b = itemPageService.genItemHtml(Long.parseLong(text));
+            if(b){
+               System.out.println("生成静态页面成功....");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

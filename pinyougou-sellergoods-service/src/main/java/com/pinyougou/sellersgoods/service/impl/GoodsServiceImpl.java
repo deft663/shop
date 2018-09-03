@@ -118,7 +118,7 @@ public class GoodsServiceImpl implements GoodsService {
 
         //图片地址（取spu的第一个图片）
         List<Map> imageList = JSON.parseArray(goods.getGoodsDesc().getItemImages(), Map.class);
-        if (imageList.size() > 0) {
+        if (imageList!=null&&imageList.size() > 0) {
             item.setImage((String) imageList.get(0).get("url"));
         }
     }
@@ -238,10 +238,19 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public void updateStatus(Long[] ids, String status) {
+        //更新spu同时更新sku
         for (Long id : ids) {
             TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
             tbGoods.setAuditStatus(status);
             goodsMapper.updateByPrimaryKey(tbGoods);
+            TbItemExample example = new TbItemExample();
+            TbItemExample.Criteria criteria = example.createCriteria();
+            criteria.andGoodsIdEqualTo(tbGoods.getId());
+            List<TbItem> tbItems = itemMapper.selectByExample(example);
+            for (TbItem tbItem : tbItems) {
+                tbItem.setStatus("1");
+                itemMapper.updateByPrimaryKey(tbItem);
+            }
         }
     }
     @Override
@@ -249,7 +258,8 @@ public class GoodsServiceImpl implements GoodsService {
         TbItemExample example=new TbItemExample();
         com.pinyougou.pojo.TbItemExample.Criteria criteria = example.createCriteria();
         criteria.andGoodsIdIn(Arrays.asList(goodsIds));
-        criteria.andStatusEqualTo(status);
+
+       criteria.andStatusEqualTo(status);
         return itemMapper.selectByExample(example);
     }
 
