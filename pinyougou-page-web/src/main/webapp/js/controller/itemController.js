@@ -1,6 +1,6 @@
-//商品详细页（控制层）
-app.controller('itemController',function($scope){
-	//数量操作
+//
+app.controller('itemController',function($http,$scope){
+
 	$scope.addNum=function(x){
         $scope.num = parseInt($scope.num);
 		x=parseInt(x);		
@@ -9,13 +9,13 @@ app.controller('itemController',function($scope){
 			$scope.num=1;
 		}
 	}
-	$scope.specificationItems={};//记录用户选择的规格
-	//用户选择规格
+	$scope.specificationItems={};
+
 	$scope.selectSpecification=function(name,value){	
 		$scope.specificationItems[name]=value;
-		searchSku();//读取sku
+		searchSku();
 	}	
-	//判断某规格选项是否被用户选中
+	//
 	$scope.isSelected=function(name,value){
 		if($scope.specificationItems[name]==value){
 			return true;
@@ -23,12 +23,12 @@ app.controller('itemController',function($scope){
 			return false;
 		}		
 	}
-	//加载默认SKU
+	//
 	$scope.loadSku=function(){
 		$scope.sku=skuList[0];		
 		$scope.specificationItems= JSON.parse(JSON.stringify($scope.sku.spec)) ;
 	}
-	//匹配两个对象
+	//
 	matchObject=function(map1,map2){		
 		for(var k in map1){
 			if(map1[k]!=map2[k]){
@@ -42,7 +42,7 @@ app.controller('itemController',function($scope){
 		}
 		return true;		
 	}
-	//查询SKU
+	//SKU
 	searchSku=function(){
 		for(var i=0;i<skuList.length;i++ ){
 			if( matchObject(skuList[i].spec ,$scope.specificationItems ) ){
@@ -50,12 +50,22 @@ app.controller('itemController',function($scope){
 				return ;
 			}			
 		}	
-		$scope.sku={id:0,title:'--------',price:0};//如果没有匹配的		
+		$scope.sku={id:0,title:'--------',price:0};
 	}
-	//添加商品到购物车
-	$scope.addToCart=function(){
-		alert('skuid:'+$scope.sku.id);				
-	}
+    //娣诲姞鍟嗗搧鍒拌喘鐗╄溅
+    $scope.addToCart=function(){
+        $http.get('http://localhost:9107/cart/addGoodsToCartList.do?itemId='
+            + $scope.sku.id +'&num='+$scope.num,{'withCredentials':true}).success(
+            function(response){
+                if(response.success){
+                    location.href='http://localhost:9107/cart.html';//璺宠浆鍒拌喘鐗╄溅椤甸潰
+                }else{
+                    alert(response.message);
+                }
+            }
+        );
+    }
 
-		
+
+
 });

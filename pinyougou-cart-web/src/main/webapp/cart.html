@@ -13,18 +13,19 @@
     <script type="text/javascript" src="plugins/angularjs/angular.min.js"></script>
     <script type="text/javascript" src="js/base.js"></script>
     <script type="text/javascript" src="js/service/cartService.js"></script>
+    <script type="text/javascript" src="js/service/loginService.js"></script>
     <script type="text/javascript" src="js/controller/cartController.js"></script>
 
 </head>
 
-<body ng-app="pinyougou" ng-controller="cartController" ng-init="findCartList()">
+<body ng-app="pinyougou" ng-controller="cartController" ng-init="findCartList();showName()">
 <!--head-->
 <div class="top">
     <div class="py-container">
         <div class="shortcut">
             <ul class="fl">
-                <li class="f-item">品优购欢迎您！</li>
-                <li class="f-item">请登录　<span><a href="#">免费注册</a></span></li>
+                <li class="f-item" ng-if="loginName!=null">品优购欢迎您！<span class="name">{{loginName}}</span><span class="safe"><a href="/logout/cas">退出登录</a></span></li>
+                <li class="f-item" ng-if="loginName==null">你好，请<a href="http://localhost:9100/cas-server/login">登录</a>　<span><a href="#">免费注册</a></span></li>
             </ul>
             <ul class="fr">
                 <li class="f-item">我的订单</li>

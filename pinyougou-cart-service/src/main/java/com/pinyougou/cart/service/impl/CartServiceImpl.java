@@ -7,6 +7,7 @@ import com.pinyougou.pojo.TbItem;
 import com.pinyougou.pojo.TbOrderItem;
 import com.pinyougou.pojogroup.Cart;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,7 +31,8 @@ public class CartServiceImpl implements CartService{
         if(!item.getStatus().equals("1")){
             throw new RuntimeException("商品状态无效");
         }
-
+        if(cartList==null)
+            cartList=new ArrayList<>();
         //2.获取商家ID
         String sellerId = item.getSellerId();
         //3.根据商家ID判断购物车列表中是否存在该商家的购物车
@@ -75,9 +77,27 @@ public class CartServiceImpl implements CartService{
         return cartList;
     }
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Override
+    public List<Cart> findCartListFromRedis(String username) {
+        System.out.println("从redis中提取购物车数据....."+username);
+        List<Cart>cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(username);
+        if(cartList==null){
+            cartList=new ArrayList();
+        }
+        return cartList;
+    }
+    @Override
+    public void saveCartListToRedis(String username, List<Cart>cartList) {
+        System.out.println("向redis存入购物车数据....."+username);
+        redisTemplate.boundHashOps("cartList").put(username, cartList);
+    }
+
+
     private TbOrderItem searchOrderItemByItemId(List<TbOrderItem> orderItemList, Long itemId) {
         for (TbOrderItem orderItem : orderItemList) {
-            if(orderItem.getItemId()==itemId){
+            if(orderItem.getItemId().equals(itemId)){
                 return orderItem;
             }
         }
@@ -103,6 +123,9 @@ public class CartServiceImpl implements CartService{
 
 
     private Cart searchCartBySellerId(List<Cart> cartList, String  sellerId) {
+        if (cartList == null){
+            return null;
+         }
         for (Cart cart : cartList) {
             if(cart.getSellerId().equals(sellerId)){
                 return cart;
@@ -110,4 +133,15 @@ public class CartServiceImpl implements CartService{
         }
         return null;
     }
+
+    public List<Cart> mergeCartList(List<Cart>cartList1, List<Cart>cartList2) {
+        System.out.println("合并购物车");
+        for(Cart cart: cartList2){
+            for(TbOrderItem orderItem:cart.getOrderItemList()){
+                cartList1= addGoodsToCartList(cartList1,orderItem.getItemId(),orderItem.getNum());
+            }
+        }
+        return cartList1;
+    }
+
 }

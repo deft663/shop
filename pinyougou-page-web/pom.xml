@@ -39,7 +39,7 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <configuration>
                     <path>/</path>
-                    <port>9005</port>
+                    <port>9105</port>
                 </configuration>
             </plugin>
         </plugins>

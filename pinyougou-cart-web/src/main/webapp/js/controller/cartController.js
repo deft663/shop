@@ -1,5 +1,5 @@
 //购物车控制层
-app.controller('cartController',function($scope,cartService){
+app.controller('cartController',function($http,$scope,cartService,loginService){
     //查询购物车列表
     $scope.findCartList=function(){
         cartService.findCartList().success(
@@ -10,7 +10,7 @@ app.controller('cartController',function($scope,cartService){
         );
     }
     //添加商品到购物车
-$scope.addGoodsToCartList=function(itemId,num){
+    $scope.addGoodsToCartList=function(itemId,num){
         cartService.addGoodsToCartList(itemId,num).success(
             function(response){
                 if(response.success){
@@ -21,5 +21,13 @@ $scope.addGoodsToCartList=function(itemId,num){
             }
         );
     }
-
+    $scope.showName=function(){
+        var c= $http.get('http://localhost:9106/login/name.do',{'withCredentials':true});
+        $http.get('http://localhost:9106/login/name.do',{'withCredentials':true}).success(
+            function(response){
+                $scope.loginName=response.loginName;
+                alert(loginName)
+            }
+        );
+    }
 });
