@@ -105,5 +105,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: xalan:serializer:2.7.1" level="project" />
     <orderEntry type="module" module-name="pinyougou-cart-interface" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
+    <orderEntry type="module" module-name="pinyougou-order-interface" />
   </component>
 </module>

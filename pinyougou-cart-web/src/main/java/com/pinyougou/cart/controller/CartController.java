@@ -32,9 +32,9 @@ public class CartController {
      * @param num
      * @return
      */
-    @RequestMapping("/addGoodsToCartList")
+        @RequestMapping("/addGoodsToCartList")
     public Result addGoodsToCartList(Long itemId,Integer num, HttpServletRequest request, HttpServletResponse response){
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:9105");//统一指定的域访问我的服务器资源
+        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));//统一指定的域访问我的服务器资源
         response.setHeader("Access-Control-Allow-Credentials", "true");//同意客户端携带cookie
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -61,6 +61,8 @@ public class CartController {
 
     @RequestMapping("/findCartList")
     public List<Cart> findCartList( HttpServletRequest request, HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));//统一指定的域访问我的服务器资源
+        response.setHeader("Access-Control-Allow-Credentials", "true");//同意客户端携带cookie
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         String cartListString  = util.CookieUtil.getCookieValue(request, "cartList", "UTF-8");
         if(cartListString==null || cartListString.equals("")){

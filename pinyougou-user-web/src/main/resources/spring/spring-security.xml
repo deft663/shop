@@ -12,7 +12,6 @@
     <http pattern="/user/sendsms.do" security="none"></http>
     <http pattern="/user/add.do" security="none"></http>
 
-
     <!--   entry-point-ref  入口点引用 -->
     <http use-expressions="false" entry-point-ref="casProcessingFilterEntryPoint">
         <intercept-url pattern="/**" access="ROLE_USER"/>

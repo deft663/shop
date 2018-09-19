@@ -92,6 +92,9 @@
           <element id="archive" name="pinyougou-cart-interface-1.0-SNAPSHOT.jar">
             <element id="module-output" name="pinyougou-cart-interface" />
           </element>
+          <element id="archive" name="pinyougou-order-interface-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="pinyougou-order-interface" />
+          </element>
         </element>
       </element>
       <element id="directory" name="META-INF">

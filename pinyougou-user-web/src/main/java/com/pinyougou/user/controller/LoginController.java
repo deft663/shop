@@ -14,8 +14,9 @@ import java.util.Map;
 public class LoginController {
     @RequestMapping("/name")
     public Map showName(HttpServletRequest request, HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:9107"); //允许哪些url可以跨域请求到本域
-        response.setHeader("Access-Control-Allow-Credentials", "true");//同意客户端携带cookie
+        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));//允许哪些url可以跨域请求到本域//处理跨域
+        response.setHeader("Access-Control-Allow-Credentials", "true");//表示是否允许发送Cookie//同意客户端携带cookie
+
        // response.setHeader("Access-Control-Allow-Methods","POST"); //允许的请求方法，一般是GET,POST,PUT,DELETE,OPTIONS
        // response.setHeader("Access-Control-Allow-Headers","x-requested-with,content-type"); //允许哪些请求头可以跨域
         String name = SecurityContextHolder.getContext().getAuthentication().getName();//得到登陆人账号
